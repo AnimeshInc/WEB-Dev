@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\web\IdentityInterface;
 
 /**
  * This is the model class for table "user".
@@ -23,8 +24,13 @@ use Yii;
  * @property Role $role
  * @property Gender $gender
  */
-class User extends \yii\db\ActiveRecord
+class User extends \yii\db\ActiveRecord implements IdentityInterface
 {
+    const STATUS_DELETED = 0;
+    const STATUS_ACTIVE = 1;
+    public function validatePassword($password){
+        return Yii::$app->getSecurity() ->validatePassword($password, $this->pass);
+    }
     /**
      * {@inheritdoc}
      */
@@ -100,7 +106,44 @@ class User extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Role::className(), ['role_id' => 'role_id']);
     }
-
+    public function getId()
+    {
+        return $this->getPrimaryKey();
+    }
+    public static function findIdentity($id)
+    {
+        return static::findOne(['user_id' => $id, 'active' =>  self::STATUS_ACTIVE]);
+    }
+    public static function findIdentityByAccessToken($token, $type = null)
+    {
+        return static::find() ->andWhere(['token' => $token])  ->andWhere(['>', 'expired_at', time()])  ->one();
+    }
+    public static function findByUsername($username){
+        return static::findOne(['login' => $username, 'active'  => self::STATUS_ACTIVE]);
+    }
+    public function generateToken($expire){
+        $this->expired_at = $expire;
+        $this->token = Yii::$app->security ->generateRandomString(); 
+    }
+    public function tokenInfo($expire){
+        return [ 
+            'token' => $this->token,  
+            'expiredAt' => $this->expired_at, 
+            'fio' => $this->lastname.' '.$this->firstname. '  '.$this->patronymic, 
+            'roles' => Yii::$app->authManager-> getRolesByUser($this->user_id) 
+           ];           
+    }
+    public function logout($expire){
+        $this->token = null; 
+        $this->expired_at = null; 
+        return $this->save();
+    }
+    public function getAuthKey() {
+        
+    }
+    public function validateAuthKey($authKey) {
+        
+    }
     /**
      * Gets query for [[Gender]].
      *
