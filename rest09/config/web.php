@@ -12,14 +12,13 @@ $config = [
         '@npm'   => '@vendor/npm-asset',
     ],
     'components' => [
+        'authManager' => [ 
+            'class' => 'yii\rbac\DbManager',  ], 
         'request' => [ 
         'enableCsrfCookie' => false, 
         'parsers' => [ 
         'application/json' => 'yii\web\JsonParser',  ] 
-        ], 
-        'authManager' => [ 
-            'class' => 'yii\rbac\DbManager',  
-        ],       
+        ],  
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
@@ -27,7 +26,17 @@ $config = [
         'identityClass' => 'app\models\User', 
         'enableAutoLogin' => false, 
         'enableSession' => false, 
-        ],            
+        ],      
+        'urlManager' => [ 
+        'enablePrettyUrl' => true, 
+        'enableStrictParsing' => true, 
+        'showScriptName' => false, 
+        'rules' => [ 
+        '' => 'site/index', 
+        'login' => 'site/login', 
+        'logout' => 'site/logout', 
+        ], 
+        ],         
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
@@ -46,17 +55,7 @@ $config = [
                     'levels' => ['error', 'warning'],
                 ],
             ],
-        ],
-        'urlManager' => [ 
-        'enablePrettyUrl' => true, 
-        'enableStrictParsing' => true, 
-        'showScriptName' => false, 
-        'rules' => [ 
-        '' => 'site/index', 
-        'login' => 'site/login', 
-        'logout' => 'site/logout', 
-        ], 
-        ],            
+        ],         
         'db' => $db,
         /*
         'urlManager' => [

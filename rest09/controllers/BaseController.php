@@ -12,13 +12,13 @@ class BaseController extends Controller
     {
         return [ 
             'contentNegotiator' => [ 
-            'class' => ContentNegotiator::class,  'formats' => [ 
+            'class' => ContentNegotiator::class, 'formats' => [ 
             'application/json' =>  
            Response::FORMAT_JSON, 
             ], 
             ], 
             'authenticator' => [ 
-            'class' => QueryParamAuth::className(),  'tokenParam' => 'token', 
+            'class' => QueryParamAuth::className(), 'tokenParam' => 'token', 
             ], 
            ];           
     }

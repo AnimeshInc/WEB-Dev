@@ -14,7 +14,8 @@ class LoginForm extends Model
     public function rules()
     {
         return [ 
-            [['username', 'password'], 'required'],  ['password', 'validatePassword'],
+            [['username', 'password'], 'required'],  
+            ['password', 'validatePassword'],
            ];           
     }
     
@@ -22,7 +23,7 @@ class LoginForm extends Model
     {
         if (!$this->hasErrors()) { 
             $user = $this->getUser(); 
-            if (!$user || !$user->validatePassword($this-> password)) { 
+            if (!$user || !$user->validatePassword($this->password)) { 
             $this->addError($attribute, 'Incorrect  username or password.'); 
             } 
            }            
@@ -30,9 +31,10 @@ class LoginForm extends Model
 
     public function auth()
     {
-        if ($this->validate()) { 
+        if ($this->validate()) 
+        { 
             $this->_user->generateToken(time() + 3600 * 24);   
-            return $this->_user->save() ? $this->user-> tokenInfo() : null; 
+            return $this->_user->save() ? $this->user->tokenInfo():null; 
            } else { 
             return null; 
            }
@@ -40,7 +42,7 @@ class LoginForm extends Model
 
     public function getUser(){
         if ($this->_user === false) { 
-            $this->_user = User::findByUsername($this- >username); 
+            $this->_user = User::findByUsername($this->username); 
             } 
             return $this->_user;            
     }

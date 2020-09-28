@@ -29,11 +29,75 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
     const STATUS_DELETED = 0;
     const STATUS_ACTIVE = 1;
     public function validatePassword($password){
-        return Yii::$app->getSecurity() ->validatePassword($password, $this->pass);
+        return Yii::$app->getSecurity()->validatePassword($password, $this->pass);
     }
-    /**
-     * {@inheritdoc}
-     */
+    public function getId() {
+
+        return $this->getPrimaryKey();  
+
+    }
+
+    public static function findIdentity($id) {
+
+        return static::findOne(['user_id' => $id, 'active' =>
+        self::STATUS_ACTIVE]);
+
+    }
+
+    public static function findIdentityByAccessToken($token,$type=null) {
+
+        return static::find()->andWhere(['token' => $token])->andWhere(['>', 'expired_at', time()])->one();
+
+    }
+
+    public static function findByUsername($username) {
+
+        return static::findOne(['login' => $username, 'active'
+        => self::STATUS_ACTIVE]);
+
+    }
+
+    public function generateToken($expire) {
+
+        $this->expired_at = $expire;
+        $this->token = Yii::$app->security
+        ->generateRandomString();
+
+    }
+
+    public function tokenInfo() {
+
+        return [
+            'token' => $this->token,
+            'expiredAt' => $this->expired_at,
+            'fio' => $this->lastname.' '.$this->firstname. '
+            '.$this->patronymic,
+            'roles' => Yii::$app->authManager->
+            getRolesByUser($this->user_id)
+            ];
+
+    }
+
+    public function logout() {
+
+        $this->token = null;
+        $this->expired_at = null;
+        return $this->save();
+
+    }
+
+    public function getAuthKey()
+    {
+    
+    }
+
+    public function validateAuthKey($authKey)
+    {
+        
+    }
+
+
+
     public static function tableName()
     {
         return 'user';
@@ -45,16 +109,13 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            [['user_id', 'lastname', 'gender_id', 'role_id'], 'required'],
-            [['user_id', 'gender_id', 'role_id', 'active'], 'integer'],
+            [['lastname', 'firstname', 'gender_id', 'role_id'], 'required'],
+            [['expired_at', 'gender_id', 'role_id', 'active'], 'integer'],
             [['birthday'], 'safe'],
             [['lastname', 'firstname', 'patronymic', 'login'], 'string', 'max' => 50],
-            [['pass'], 'string', 'max' => 255],
-            [['user_id'], 'unique'],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Student::className(), 'targetAttribute' => ['user_id' => 'user_id']],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Teacher::className(), 'targetAttribute' => ['user_id' => 'user_id']],
-            [['role_id'], 'exist', 'skipOnError' => true, 'targetClass' => Role::className(), 'targetAttribute' => ['role_id' => 'role_id']],
+            [['pass', 'token'], 'string', 'max' => 255],
             [['gender_id'], 'exist', 'skipOnError' => true, 'targetClass' => Gender::className(), 'targetAttribute' => ['gender_id' => 'gender_id']],
+           
         ];
     }
 
@@ -70,6 +131,8 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
             'patronymic' => 'Patronymic',
             'login' => 'Login',
             'pass' => 'Pass',
+            'token' => 'Token',
+            'expired_at' => 'Expired At',
             'gender_id' => 'Gender ID',
             'birthday' => 'Birthday',
             'role_id' => 'Role ID',
@@ -78,72 +141,25 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
     }
 
     /**
-     * Gets query for [[User]].
+     * Gets query for [[Student]].
      *
      * @return \yii\db\ActiveQuery|\app\models\queries\StudentQuery
      */
-    public function getUser()
+    public function getStudent()
     {
         return $this->hasOne(Student::className(), ['user_id' => 'user_id']);
     }
 
     /**
-     * Gets query for [[User0]].
+     * Gets query for [[Teacher]].
      *
      * @return \yii\db\ActiveQuery|\app\models\queries\TeacherQuery
      */
-    public function getUser0()
+    public function getTeacher()
     {
         return $this->hasOne(Teacher::className(), ['user_id' => 'user_id']);
     }
 
-    /**
-     * Gets query for [[Role]].
-     *
-     * @return \yii\db\ActiveQuery|\app\models\queries\RoleQuery
-     */
-    public function getRole()
-    {
-        return $this->hasOne(Role::className(), ['role_id' => 'role_id']);
-    }
-    public function getId()
-    {
-        return $this->getPrimaryKey();
-    }
-    public static function findIdentity($id)
-    {
-        return static::findOne(['user_id' => $id, 'active' =>  self::STATUS_ACTIVE]);
-    }
-    public static function findIdentityByAccessToken($token, $type = null)
-    {
-        return static::find() ->andWhere(['token' => $token])  ->andWhere(['>', 'expired_at', time()])  ->one();
-    }
-    public static function findByUsername($username){
-        return static::findOne(['login' => $username, 'active'  => self::STATUS_ACTIVE]);
-    }
-    public function generateToken($expire){
-        $this->expired_at = $expire;
-        $this->token = Yii::$app->security ->generateRandomString(); 
-    }
-    public function tokenInfo($expire){
-        return [ 
-            'token' => $this->token,  
-            'expiredAt' => $this->expired_at, 
-            'fio' => $this->lastname.' '.$this->firstname. '  '.$this->patronymic, 
-            'roles' => Yii::$app->authManager-> getRolesByUser($this->user_id) 
-           ];           
-    }
-    public function logout($expire){
-        $this->token = null; 
-        $this->expired_at = null; 
-        return $this->save();
-    }
-    public function getAuthKey() {
-        
-    }
-    public function validateAuthKey($authKey) {
-        
-    }
     /**
      * Gets query for [[Gender]].
      *
@@ -153,6 +169,13 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
     {
         return $this->hasOne(Gender::className(), ['gender_id' => 'gender_id']);
     }
+
+    /**
+     * Gets query for [[Role]].
+     *
+     * @return \yii\db\ActiveQuery|\app\models\queries\RoleQuery
+     */
+   
 
     /**
      * {@inheritdoc}

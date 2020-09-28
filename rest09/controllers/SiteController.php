@@ -24,7 +24,7 @@ class SiteController extends BaseController
     
     public function actionIndex()
     {
-        return 'API for Shedule'                
+        return 'API for Shedule';                
     }
 
     public function actionLogin()
