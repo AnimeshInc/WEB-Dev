@@ -3,7 +3,7 @@
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
 
-$config = [
+$config = [      
     'id' => 'basic-console',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
@@ -14,6 +14,9 @@ $config = [
         '@tests' => '@app/tests',
     ],
     'components' => [
+    'authManager' => [ 
+        'class' => 'yii\rbac\DbManager',  
+    ],  
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
