@@ -61,8 +61,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
     public function generateToken($expire) {
 
         $this->expired_at = $expire;
-        $this->token = Yii::$app->security
-        ->generateRandomString();
+        $this->token = Yii::$app->security->generateRandomString();
 
     }
 

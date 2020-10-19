@@ -1,4 +1,7 @@
 <?php
+
+namespace app\controllers;
+
 use yii\data\ActiveDataProvider;
 use app\models\User;
 use Yii;
@@ -8,9 +11,10 @@ use yii\web\NotFoundHttpException;
 
 class UserController extends BaseController
 {
-    return new ActiveDataProvider([
-        'query' => User::find(),
-        ]);
+    public function actionIndex()
+    {
+        return new ActiveDataProvider(['query' => User::find(),]);
+    }
         
     public function actionCreate()
     {

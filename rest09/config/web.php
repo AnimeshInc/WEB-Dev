@@ -3,7 +3,7 @@
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
 
-$config = [      
+$config = [
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
@@ -12,36 +12,39 @@ $config = [
         '@npm'   => '@vendor/npm-asset',
     ],
     'components' => [
-        'authManager' => [ 
-            'class' => 'yii\rbac\DbManager',  ], 
-        'request' => [ 
-        'enableCsrfCookie' => false, 
-        'parsers' => [ 
-        'application/json' => 'yii\web\JsonParser',  ] 
-        ],  
+        'request' => [
+            'enableCsrfCookie' => false,
+            'parsers' => [
+            'application/json' => 'yii\web\JsonParser',
+            ]
+        ],
+        'authManager' => [
+            'class' => 'yii\rbac\DbManager',
+            ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
-        'user' => [ 
-        'identityClass' => 'app\models\User', 
-        'enableAutoLogin' => false, 
-        'enableSession' => false, 
-        ],      
-        'urlManager' => [ 
-        'enablePrettyUrl' => true, 
-        'enableStrictParsing' => true, 
-        'showScriptName' => false, 
-        'rules' => [ 
-        '' => 'site/index', 
-        'login' => 'site/login', 
-        'logout' => 'site/logout', 
-        ], 
-        [
-        'class' => 'yii\rest\UrlRule',
-        'controller' => 'user',
-        'except' => ['delete'],
+        'user' => [
+            'identityClass' => 'app\models\User',
+            'enableAutoLogin' => false,
+            'enableSession' => false,
         ],
-        ],         
+        'urlManager' => [
+            'enablePrettyUrl' => true,
+            'enableStrictParsing' => true,
+            'showScriptName' => false,
+            'rules' => 
+            [
+            '' => 'site/index',
+            'login' => 'site/login',
+            'logout' => 'site/logout',
+            [
+                'class' => 'yii\rest\UrlRule',
+                'controller' => 'user',
+                'except' => ['delete'],
+                ],
+            ],
+        ],
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
@@ -60,7 +63,7 @@ $config = [
                     'levels' => ['error', 'warning'],
                 ],
             ],
-        ],         
+        ],
         'db' => $db,
         /*
         'urlManager' => [
