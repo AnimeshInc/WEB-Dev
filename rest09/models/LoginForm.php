@@ -31,13 +31,13 @@ class LoginForm extends Model
 
     public function auth()
     {
-        if ($this->validate()) 
-        { 
-            $this->_user->generateToken(time() + 3600 * 24);   
-            return $this->_user->save() ? $this->user->tokenInfo():null; 
-           } else { 
-            return null; 
-           }
+        if ($this->validate()) {
+            $this->_user->generateToken(time() + 3600 * 24);
+            
+            return $this->_user->save(false) ? $this->_user->tokenInfo() : null;
+            } else {
+            return null;
+            }
     }
 
     public function getUser(){
