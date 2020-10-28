@@ -48,6 +48,11 @@ $config = [
                 'controller' => 'teacher',
                 'except' => ['delete'],
             ],
+            [
+                'class' => 'yii\rest\UrlRule',
+                'controller' => 'student',
+                'except' => ['delete'],
+            ],
             ],
         ],
         'errorHandler' => [

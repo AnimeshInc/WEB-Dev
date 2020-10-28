@@ -13,8 +13,7 @@ class BaseController extends Controller
         return [ 
             'contentNegotiator' => [ 
             'class' => ContentNegotiator::class, 'formats' => [ 
-            'application/json' =>  
-           Response::FORMAT_JSON, 
+            'application/json' =>  Response::FORMAT_JSON, 
             ], 
             ], 
             'authenticator' => [ 
