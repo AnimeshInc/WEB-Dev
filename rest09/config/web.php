@@ -42,17 +42,38 @@ $config = [
                 'class' => 'yii\rest\UrlRule',
                 'controller' => 'user',
                 'except' => ['delete'],
-            ],
-            [
-                'class' => 'yii\rest\UrlRule',
-                'controller' => 'teacher',
-                'except' => ['delete'],
-            ],
+                ],
             [
                 'class' => 'yii\rest\UrlRule',
                 'controller' => 'student',
                 'except' => ['delete'],
-            ],
+                ],
+            [
+                'class' => 'yii\rest\UrlRule',
+                'controller' => 'teacher',
+                'except' => ['delete'],
+                ],
+            [
+                'class' => 'yii\rest\UrlRule',
+                'controller' => 'gender',
+                'except' => ['delete'],
+                ],
+            [
+                'class' => 'yii\rest\UrlRule',
+                'controller' => 'day',
+                'except' => ['delete'],
+                ],
+            [
+                'class' => 'yii\rest\UrlRule',
+                'controller' => 'otdel',
+                'except' => ['delete'],
+                ],
+            [
+                'class' => 'yii\rest\UrlRule',
+                'controller' => 'special',
+                'except' => ['delete'],
+                ],
+                
             ],
         ],
         'errorHandler' => [
