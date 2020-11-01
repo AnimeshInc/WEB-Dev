@@ -55,7 +55,7 @@ class Special extends \yii\db\ActiveRecord
     {
         $fields = parent::fields();
         return array_merge($fields, [
-            'name' => function () { return $this->name;},
+            'special_id' => function () { return $this->special_id;},
             'otdelName' => function () { return $this->otdel->name;},
             'active' => function () { return $this->active;},
         ]);

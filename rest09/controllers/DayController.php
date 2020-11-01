@@ -10,7 +10,6 @@ use yii\web\NotFoundHttpException;
 
 class DayController extends BaseController
 {
-
     public function actionIndex()
     {
         return new ActiveDataProvider(['query' => Day::find()]);
@@ -47,6 +46,7 @@ class DayController extends BaseController
         }  
         return $day;
     }
+    
     public function findModel($id)
     {
         $day = Day::findOne($id);
@@ -55,5 +55,5 @@ class DayController extends BaseController
         }
         return $day;
     }
-   
 }
+?>

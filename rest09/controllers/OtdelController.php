@@ -1,5 +1,4 @@
 <?php
-
 namespace app\controllers;
 
 use yii\data\ActiveDataProvider;
@@ -11,7 +10,6 @@ use yii\web\NotFoundHttpException;
 
 class OtdelController extends BaseController
 {
-
     public function actionIndex()
     {
         return new ActiveDataProvider(['query' => Otdel::find()]);
@@ -48,6 +46,7 @@ class OtdelController extends BaseController
         }  
         return $otdel;
     }
+
     public function findModel($id)
     {
         $otdel = Otdel::findOne($id);
@@ -56,5 +55,5 @@ class OtdelController extends BaseController
         }
         return $otdel;
     }
-   
 }
+?>

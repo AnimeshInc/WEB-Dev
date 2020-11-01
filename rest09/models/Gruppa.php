@@ -33,12 +33,12 @@ class Gruppa extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['gruppa_id', 'name', 'special_id', 'date_begin'], 'required'],
-            [['gruppa_id', 'special_id'], 'integer'],
+            [['name', 'special_id', 'date_begin'], 'required'],
+            [['special_id'], 'integer'],
             [['date_begin', 'date_end'], 'safe'],
             [['name'], 'string', 'max' => 10],
-            [['gruppa_id'], 'unique'],
             [['special_id'], 'exist', 'skipOnError' => true, 'targetClass' => Special::className(), 'targetAttribute' => ['special_id' => 'special_id']],
+            [['gruppa_id'], 'unique', 'targetClass' => Gruppa::className(), 'message' => 'Предмет успешно добавлен'],
         ];
     }
 
@@ -84,5 +84,35 @@ class Gruppa extends \yii\db\ActiveRecord
     public function getStudents()
     {
         return $this->hasMany(Student::className(), ['gruppa_id' => 'gruppa_id']);
+    }
+    public function loadAndSave($bodyParams)
+    {
+        $gruppa = ($this->isNewRecord) ? new Gruppa() : Gruppa::findOne($this->gruppa_id);
+        if ($gruppa->load($bodyParams, '') && $gruppa->save()) {
+            if ($this->isNewRecord) {
+                $this->gruppa_id = $gruppa->gruppa_id;
+            }
+            if ($this->load($bodyParams, '') && $this->save()) {
+                return true;
+            }
+}
+
+        return false;
+
+    }
+    public static function find()
+    {
+        return new \app\models\queries\UserQuery(get_called_class());
+    }
+    public function fields()
+    {
+        $fields = parent::fields();
+        return array_merge($fields, [
+            'gruppa_id' => function () { return $this->gruppa_id;},
+            'name' => function () { return $this->name;},
+            'specialName' => function () { return $this->special->name;},
+            'date_begin' => function () { return $this->date_begin;},
+            'date_end' => function () { return $this->date_end;},
+        ]);
     }
 }

@@ -10,7 +10,6 @@ use yii\web\NotFoundHttpException;
 
 class GenderController extends BaseController
 {
-
     public function actionIndex()
     {
         return new ActiveDataProvider(['query' => Gender::find()]);
@@ -56,5 +55,5 @@ class GenderController extends BaseController
         }
         return $gender;
     }
-   
 }
+?>

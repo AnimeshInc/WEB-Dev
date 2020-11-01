@@ -68,6 +68,7 @@ class Otdel extends \yii\db\ActiveRecord
     {
         $fields = parent::fields();
         return array_merge($fields, [
+            'otdel_id' => function () { return $this->otdel_id;},
             'name' => function () { return $this->name;},
             'active' => function () { return $this->active;},
         ]);

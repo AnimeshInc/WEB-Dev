@@ -1,5 +1,4 @@
 <?php
-
 namespace app\controllers;
 
 use yii\data\ActiveDataProvider;
@@ -57,5 +56,4 @@ class UserController extends BaseController
         return $user;  
     }
 }
-
 ?>

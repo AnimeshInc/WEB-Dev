@@ -32,11 +32,11 @@ class Subject extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['subject_id', 'name', 'otdel_id', 'hours'], 'required'],
-            [['subject_id', 'otdel_id', 'hours', 'active'], 'integer'],
+            [['name', 'otdel_id', 'hours'], 'required'],
+            [['otdel_id', 'hours', 'active'], 'integer'],
             [['name'], 'string', 'max' => 50],
-            [['subject_id'], 'unique'],
             [['otdel_id'], 'exist', 'skipOnError' => true, 'targetClass' => Otdel::className(), 'targetAttribute' => ['otdel_id' => 'otdel_id']],
+            [['subject_id'], 'unique', 'targetClass' => Subject::className(), 'message' => 'Предмет успешно добавлен'],
         ];
     }
 
@@ -72,5 +72,42 @@ class Subject extends \yii\db\ActiveRecord
     public function getOtdel()
     {
         return $this->hasOne(Otdel::className(), ['otdel_id' => 'otdel_id']);
+    }
+
+    /**
+     * {@inheritdoc}
+     * @return \app\models\queries\UserQuery the active query used by this AR class.
+     */
+    
+    public static function find()
+    {
+        return new \app\models\queries\UserQuery(get_called_class());
+    }
+
+    public function fields()
+    {
+        $fields = parent::fields();
+        return array_merge($fields, [
+            'subject_id' => function () { return $this->subject_id;},
+            'name' => function () { return $this->name;},
+            'otdelName' => function () { return $this->otdel->name;},
+            'hours' => function () { return $this->hours;},
+            'active' => function () { return $this->active;},
+        ]);
+    }
+    
+    public function loadAndSave($bodyParams)
+    {
+        $subject = ($this->isNewRecord) ? new Subject() : Subject::findOne($this->subject_id);
+        if ($subject->load($bodyParams, '') && $subject->save()) {
+            if ($this->isNewRecord) {
+                $this->subject_id = $subject->subject_id;
+            }
+            if ($this->load($bodyParams, '') && $this->save()) {
+                return true;
+            }
+        }
+        return false;
+
     }
 }

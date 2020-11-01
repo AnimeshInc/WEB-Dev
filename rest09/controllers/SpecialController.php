@@ -1,5 +1,4 @@
 <?php
-
 namespace app\controllers;
 
 use yii\data\ActiveDataProvider;
@@ -11,7 +10,6 @@ use yii\web\NotFoundHttpException;
 
 class SpecialController extends BaseController
 {
-
     public function actionIndex()
     {
         return new ActiveDataProvider(['query' => Special::find()]);
@@ -48,6 +46,7 @@ class SpecialController extends BaseController
         }  
         return $special;
     }
+
     public function findModel($id)
     {
         $special = Special::findOne($id);
@@ -56,5 +55,5 @@ class SpecialController extends BaseController
         }
         return $special;
     }
-   
 }
+?>
