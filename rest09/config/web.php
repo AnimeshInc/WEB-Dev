@@ -93,6 +93,11 @@ $config = [
                 'controller' => 'gruppa',
                 'except' => ['delete'],
                 ],   
+            [
+                'class' => 'yii\rest\UrlRule',
+                'controller' => 'lesson-plan',
+                'except' => ['delete'],
+                ],   
             ],
         ],
         'errorHandler' => [
