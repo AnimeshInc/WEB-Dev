@@ -16,7 +16,7 @@ use Yii;
  * @property Classroom $classroom
  * @property Day $day
  * @property LessonNum $lessonNum
- * @property LessonPlan $lessonPlan
+ * @property LessonPlan $schedule
  */
 class Schedule extends \yii\db\ActiveRecord
 {
@@ -34,14 +34,44 @@ class Schedule extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['schedule_id', 'lesson_plan_id', 'day_id', 'lesson_num_id', 'classroom_id'], 'required'],
-            [['schedule_id', 'lesson_plan_id', 'day_id', 'lesson_num_id', 'classroom_id'], 'integer'],
-            [['schedule_id'], 'unique'],
+            [['lesson_plan_id', 'day_id', 'lesson_num_id', 'classroom_id'], 'required'],
+            [['lesson_plan_id', 'day_id', 'lesson_num_id', 'classroom_id'], 'integer'],
             [['classroom_id'], 'exist', 'skipOnError' => true, 'targetClass' => Classroom::className(), 'targetAttribute' => ['classroom_id' => 'classroom_id']],
             [['day_id'], 'exist', 'skipOnError' => true, 'targetClass' => Day::className(), 'targetAttribute' => ['day_id' => 'day_id']],
             [['lesson_num_id'], 'exist', 'skipOnError' => true, 'targetClass' => LessonNum::className(), 'targetAttribute' => ['lesson_num_id' => 'lesson_num_id']],
+            [['schedule_id'], 'unique', 'targetClass' => Schedule::className(), 'message' => 'Успешно добавлено'],
             [['lesson_plan_id'], 'exist', 'skipOnError' => true, 'targetClass' => LessonPlan::className(), 'targetAttribute' => ['lesson_plan_id' => 'lesson_plan_id']],
         ];
+    }
+
+    public function fields()
+    {
+        $fields = parent::fields();
+        return array_merge($fields, [
+            'gruppa_id' => function () { return $this->lessonPlan->gruppa_id;},
+            'subject_id' => function () { return $this->lessonPlan->subject_id;},
+            'userName' => function () { return $this->lessonPlan->user->firstname;},
+            'userLastname' => function () { return $this->lessonPlan->user->lastname;},
+            'userPatronymic' => function () { return $this->lessonPlan->user->patronymic;},
+            'dayName' => function () { return $this->day->name;},
+            'lessonnumName' => function () { return $this->lessonNum->name;},
+            'classroomName' => function () { return $this->classroom->name;},
+        ]);
+    }
+
+    public function loadAndSave($bodyParams)
+    {
+        $schedule = ($this->isNewRecord) ? new Schedule() :
+        Schedule::findOne($this->schedule_id);
+        if ($schedule->load($bodyParams, '') && $schedule->save()) {
+            if ($this->isNewRecord) {
+                $this->schedule_id = $schedule->schedule_id;
+            }
+            if ($this->load($bodyParams, '') && $this->save()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -56,6 +86,16 @@ class Schedule extends \yii\db\ActiveRecord
             'lesson_num_id' => 'Lesson Num ID',
             'classroom_id' => 'Classroom ID',
         ];
+    }
+
+    public function getUser()
+    {
+        return $this->hasOne(User::className(), ['user_id' => 'user_id']);
+    }
+
+    public function getGruppa()
+    {
+        return $this->hasOne(Gruppa::className(), ['gruppa_id' => 'gruppa_id']);
     }
 
     /**
