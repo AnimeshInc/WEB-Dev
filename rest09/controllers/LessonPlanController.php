@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use yii\data\ActiveDataProvider;
 use app\models\LessonPlan;
+use app\models\Schedule;
 use Yii;
 use yii\helpers\Url;
 use yii\web\ServerErrorHttpException;
@@ -14,7 +15,14 @@ class LessonPlanController extends BaseController
 
     public function actionIndex()
     {
-        return new ActiveDataProvider(['query' => LessonPlan::find()]);
+        $strainer1 = $_GET['gruppa'];
+        $strainer2 = $_GET['user'];
+        if ($strainer1!=""&&$strainer1!=null&&$strainer2!=""&&$strainer2!=null){
+            return new ActiveDataProvider(['query' => LessonPlan::find()->where(['gruppa_id' => $strainer1,'user_id' => $strainer2])]);
+        }
+        else{
+            return new ActiveDataProvider(['query' => LessonPlan::find()]);
+        }
     }
 
     public function actionCreate()
@@ -33,7 +41,18 @@ class LessonPlanController extends BaseController
     {
         return $this->findModel($id);
     }
-
+    public function actionDelete($id)
+    {
+        if (!Schedule::find()->where(['lesson_plan_id' => $id])->exists()){
+            $lessonplan = $this->findModel($id)->delete();
+            if ($lessonplan==1){
+                return "message: Deleted lesson plan №$id";
+            }
+        }
+        else{
+            return "message: Schedule exists, cannot delete.";
+        }
+    }
     public function saveModel($lessonplan)
     {
         if ($lessonplan->loadAndSave(Yii::$app->getRequest()->getBodyParams())) {

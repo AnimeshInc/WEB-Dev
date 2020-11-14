@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use yii\data\ActiveDataProvider;
 use app\models\Schedule;
+use app\models\LessonPlan;
 use Yii;
 use yii\helpers\Url;
 use yii\web\ServerErrorHttpException;
@@ -14,7 +15,15 @@ class ScheduleController extends BaseController
 
     public function actionIndex()
     {
-        return new ActiveDataProvider(['query' => Schedule::find()]);
+        $strainer1 = $_GET['gruppa'];
+        $strainer2 = $_GET['user'];
+        if ($strainer1!=""&&$strainer1!=null&&$strainer2!=""&&$strainer2!=null){
+            $query =(new \yii\db\Query())->select(['lesson_plan.lesson_plan_id'])-> from(['schedule'])->innerJoin('lesson_plan')->where(['lesson_plan.gruppa_id'=>$strainer1,'lesson_plan.user_id'=>$strainer2]);
+            return new ActiveDataProvider(['query' => Schedule::find()->where(['schedule.lesson_plan_id' => $query])]);
+        }
+        else{
+            return new ActiveDataProvider(['query' => Schedule::find()]);
+        }
     }
 
     public function actionCreate()
@@ -32,6 +41,16 @@ class ScheduleController extends BaseController
     public function actionView($id)
     {
         return $this->findModel($id);
+    }
+    public function actionDelete($id)
+    {
+        $schedule = $this->findModel($id)->delete();
+        if ($schedule==1){
+            return "message: Deleted schedule №$id";
+        }
+        else{
+            return "Error.";
+        }
     }
 
     public function saveModel($schedule)
